@@ -1,4 +1,4 @@
-package test.jjug_ccc_2023_spring;
+package kirimaru;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
