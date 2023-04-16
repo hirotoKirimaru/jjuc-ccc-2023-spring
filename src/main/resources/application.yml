@@ -31,3 +31,9 @@ logging:
 #    root: info
 #    kirimaru: trace
 #    org.springframework.security: trace
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # actuator????
