@@ -28,5 +28,6 @@ mybatis:
 logging:
   level:
     root: debug
-    kirimaru: trace
-    org.springframework.security: trace
+#    root: info
+#    kirimaru: trace
+#    org.springframework.security: trace
