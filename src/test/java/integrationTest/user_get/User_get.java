@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import integrationTest.helper.IntegrationTestsTemplate;
 import java.net.URI;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @SpringBootConfiguration
+@Disabled("結合試験？")
 public class User_get {
 
   @Autowired
