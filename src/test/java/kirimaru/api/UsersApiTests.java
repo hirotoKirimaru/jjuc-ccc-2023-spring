@@ -2,12 +2,14 @@ package kirimaru.api;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import kirimaru.biz.service.UsersService;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -18,6 +20,9 @@ class UsersApiTests {
 
   @Autowired
   MockMvc mockMvc;
+  @MockBean
+  UsersService usersService;
+
   String url = "/users";
 
   @Test

@@ -23,7 +23,7 @@ import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @SpringBootConfiguration
-//@Disabled("結合試験？")
+@Disabled("結合試験？")
 public class User_get {
 
   @Autowired
