@@ -1,0 +1,5 @@
+CREATE TABLE USERS
+(
+    user_id VARCHAR(13) PRIMARY KEY,
+    name    VARCHAR(120)
+);

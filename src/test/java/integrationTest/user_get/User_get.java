@@ -12,6 +12,8 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -21,7 +23,7 @@ import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @SpringBootConfiguration
-@Disabled("結合試験？")
+//@Disabled("結合試験？")
 public class User_get {
 
   @Autowired
@@ -35,6 +37,11 @@ public class User_get {
   }
 
   protected ResponseEntity get() {
-    return restTemplate.getForEntity(URI.create("get"), List.class);
+
+    HttpEntity<String> stringHttpEntity = new HttpEntity<>(null, null);
+
+    return restTemplate.exchange(
+        URI.create("/users"), HttpMethod.GET, stringHttpEntity, String.class
+    );
   }
 }
