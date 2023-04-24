@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import kirimaru.api.dto.ResponseUser;
 import kirimaru.api.dto.UserDto;
 import kirimaru.biz.domain.User;
+import kirimaru.biz.service.date.DateTimeResolver;
 import kirimaru.biz.service.UsersService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,12 +23,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class UsersApi {
 
   private final UsersService usersService;
+  private final DateTimeResolver dateTimeResolver;
 
   @RequestMapping(value = "", method = RequestMethod.GET)
   public ResponseEntity<ResponseUser> get(@Validated GetParam param) {
     List<User> users = usersService.execute();
     List<UserDto> userDtoList = users.stream().map(e -> UserDto.builder().build())
         .collect(Collectors.toList());
+
+    System.out.println(dateTimeResolver.now());
+
     return ResponseEntity.ok(new ResponseUser(userDtoList));
   }
 

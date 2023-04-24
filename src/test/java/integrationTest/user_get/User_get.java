@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import integrationTest.helper.IntegrationTestsTemplate;
 import kirimaru.api.ControllerConstant.Uri;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ public class User_get extends IntegrationTestsTemplate {
   @Test
   void test_01() {
     // GIVEN
+    Mockito.when(dateTimeResolver.now()).thenCallRealMethod();
     // WHEN
     var response = get(Uri.USERS);
 

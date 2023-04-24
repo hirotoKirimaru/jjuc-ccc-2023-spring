@@ -3,7 +3,9 @@ package kirimaru.api;
 import static org.junit.jupiter.api.Assertions.*;
 
 import kirimaru.biz.service.UsersService;
+import kirimaru.biz.service.date.DateTimeResolver;
 import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
@@ -22,6 +24,9 @@ class UsersApiTests {
   MockMvc mockMvc;
   @MockBean
   UsersService usersService;
+
+  @MockBean(answer = Answers.CALLS_REAL_METHODS)
+  DateTimeResolver dateTimeResolver;
 
   String url = "/users";
 
