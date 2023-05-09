@@ -1,7 +1,6 @@
 package kirimaru.biz.repository;
 
 import java.util.List;
-import kirimaru.api.dto.UserDto;
 import kirimaru.biz.domain.User;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;

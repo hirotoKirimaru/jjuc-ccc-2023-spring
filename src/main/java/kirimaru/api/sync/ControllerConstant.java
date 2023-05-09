@@ -1,4 +1,4 @@
-package kirimaru.api;
+package kirimaru.api.sync;
 
 import lombok.AllArgsConstructor;
 

@@ -1,41 +1,49 @@
-package kirimaru.api;
+package kirimaru.api.async.sync;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import kirimaru.api.sync.async.Users2Api;
 import kirimaru.biz.service.UsersService;
 import kirimaru.biz.service.date.DateTimeResolver;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.BodyContentSpec;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-@WebMvcTest(UsersApi.class)
+
+@WebMvcTest(Users2Api.class)
 //@AutoConfigureWebClient
-class UsersApiTests {
+class Users2ApiTests {
 
   @Autowired
-  MockMvc mockMvc;
+  WebTestClient webTestClient;
   @MockBean
   UsersService usersService;
 
   @MockBean(answer = Answers.CALLS_REAL_METHODS)
   DateTimeResolver dateTimeResolver;
 
-  String url = "/users";
+  String url = "/users2";
 
   @Test
   void success() throws Exception {
-    var result = this.mockMvc.perform(MockMvcRequestBuilders.get(url))
-        .andExpect(MockMvcResultMatchers.status().isOk())
-        .andReturn();
+    this.webTestClient.get().uri(url)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody(String.class)
+        .value(res -> {
+          try {
+            JSONAssert.assertEquals("{}", res,true);
+          } catch (JSONException e) {
+            throw new RuntimeException(e);
+          }
 
-    JSONAssert.assertEquals("{}", result.getResponse().getContentAsString(), true);
+        });
+//        .andReturn();
   }
 }

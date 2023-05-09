@@ -1,9 +1,9 @@
-package kirimaru.api;
+package kirimaru.api.sync.sync;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import kirimaru.api.dto.ResponseUser;
-import kirimaru.api.dto.UserDto;
+import kirimaru.api.sync.dto.ResponseUser;
+import kirimaru.api.sync.dto.UserDto;
 import kirimaru.biz.domain.User;
 import kirimaru.biz.service.date.DateTimeResolver;
 import kirimaru.biz.service.UsersService;

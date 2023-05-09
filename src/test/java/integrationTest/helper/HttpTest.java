@@ -1,7 +1,7 @@
 package integrationTest.helper;
 
 import java.net.URI;
-import kirimaru.api.ControllerConstant;
+import kirimaru.api.sync.ControllerConstant;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;

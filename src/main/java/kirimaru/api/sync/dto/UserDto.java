@@ -1,4 +1,4 @@
-package kirimaru.api.dto;
+package kirimaru.api.sync.dto;
 
 import lombok.Builder;
 
