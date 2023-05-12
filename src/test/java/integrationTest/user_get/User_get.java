@@ -3,7 +3,7 @@ package integrationTest.user_get;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import integrationTest.helper.IntegrationTestsTemplate;
-import kirimaru.api.sync.ControllerConstant.Uri;
+import kirimaru.api.ControllerConstant.Uri;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

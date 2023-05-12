@@ -1,6 +1,6 @@
 package integrationTest.helper;
 
-import kirimaru.api.sync.ControllerConstant;
+import kirimaru.api.ControllerConstant;
 import kirimaru.biz.service.date.DateTimeResolverImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.mockito.Answers;

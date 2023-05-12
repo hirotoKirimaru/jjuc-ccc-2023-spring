@@ -1,4 +1,4 @@
-package kirimaru.api.sync.dto;
+package kirimaru.api.dto;
 
 import java.util.List;
 
