@@ -12,7 +12,12 @@ public class ControllerConstant {
     USERS("/users", Map.of(
         HttpMethod.GET, UserRole.ALL,
         HttpMethod.POST, List.of(UserRole.SYSTEM_ADMIN)
+    )),
+    USERS2("/users2", Map.of(
+        HttpMethod.GET, UserRole.ALL,
+        HttpMethod.POST, List.of(UserRole.SYSTEM_ADMIN)
     ));
+    ;
 
     public final String value;
     public final Map<HttpMethod, List<UserRole>> accepts;
