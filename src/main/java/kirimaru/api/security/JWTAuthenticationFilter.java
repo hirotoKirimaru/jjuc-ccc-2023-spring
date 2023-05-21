@@ -17,21 +17,24 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Component;
 
 /**
  * 認証フィルター
  */
+@Component
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter implements
     AuthErrorHelper {
 
-  private AuthenticationManager authenticationManager;
+//  private AuthenticationManager authenticationManager;
 
 
   public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
-    this.authenticationManager = authenticationManager;
-
+//    this.authenticationManager = authenticationManager;
+    setAuthenticationManager(authenticationManager);
     // ログイン用のPATH
     setRequiresAuthenticationRequestMatcher(
         new AntPathRequestMatcher("/login", HttpMethod.POST.name()));
@@ -50,7 +53,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     try {
       var form = new ObjectMapper().readValue(req.getInputStream(), LoginForm.class);
-      return authenticationManager.authenticate(
+      return this.getAuthenticationManager().authenticate(
           new UsernamePasswordAuthenticationToken(
               form.email(),
               form.password(),
@@ -68,7 +71,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       FilterChain chain, Authentication auth) throws IOException, ServletException {
 
     String token = Jwts.builder()
-        .setSubject(((User) auth.getCredentials()).getUsername())
+        .setSubject(((AuthUser) auth.getPrincipal()).getUsername())
         .setExpiration(new Date(System.currentTimeMillis() + 2000000))
         .signWith(SecurityConstants.KEY)
         .compact();
@@ -86,4 +89,9 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     createErrorResponse(response, HttpStatus.UNAUTHORIZED);
 //    super.unsuccessfulAuthentication(request, response, failed);
   }
+
+//  @Override
+//  protected AuthenticationFailureHandler getFailureHandler() {
+//    return super.getFailureHandler();
+//  }
 }

@@ -1,17 +1,18 @@
 package integrationTest.helper;
 
 import java.net.URI;
-import kirimaru.api.ControllerConstant;
+import kirimaru.api.ControllerConstant.Uri;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
 public interface HttpTest {
 
-  default ResponseEntity<?> get(TestRestTemplate restTemplate, ControllerConstant.Uri uri) {
+  default ResponseEntity<String> get(TestRestTemplate restTemplate, Uri uri, HttpHeaders headers) {
 
-    HttpEntity<String> stringHttpEntity = new HttpEntity<>(null, null);
+    HttpEntity<String> stringHttpEntity = new HttpEntity<>(null, headers);
 
     return restTemplate.exchange(
         URI.create(uri.value), HttpMethod.GET, stringHttpEntity, String.class

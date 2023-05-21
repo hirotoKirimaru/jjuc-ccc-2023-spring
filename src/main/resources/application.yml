@@ -16,7 +16,7 @@ spring:
     default-property-inclusion: NON_EMPTY
 
 server:
-  port: 8080
+  port: 18080
   servlet:
     context-path: /api/v1
 

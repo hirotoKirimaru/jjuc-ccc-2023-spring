@@ -8,6 +8,7 @@ import java.util.List;
 import kirimaru.api.ControllerConstant;
 import kirimaru.api.ControllerConstant.Uri;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+@Configuration
 @EnableWebSecurity
 class SecurityConfig implements AuthErrorHelper {
 
@@ -31,12 +33,17 @@ class SecurityConfig implements AuthErrorHelper {
       AuthenticationManager authenticationManager,
       JWTAuthenticationFilter jwtAuthenticationFilter) throws Exception {
 
-    http.csrf().disable().cors().and().addFilter(new JWTAuthorizationFilter(authenticationManager))
-        .addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).logout(
-            logout -> logout.logoutRequestMatcher(
-                    new AntPathRequestMatcher("/logout", HttpMethod.GET.name()))
-                .logoutSuccessHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
-                .invalidateHttpSession(true)).authorizeHttpRequests(auth -> {
+    http.csrf().disable()
+        .cors().and()
+        .formLogin().disable()
+        .addFilter(new JWTAuthorizationFilter(authenticationManager))
+        .addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .logout(logout -> logout.logoutRequestMatcher(
+                new AntPathRequestMatcher("/logout", HttpMethod.GET.name()))
+            .logoutSuccessHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
+            .invalidateHttpSession(true))
+
+        .authorizeHttpRequests(auth -> {
           for (Uri uri : Uri.values()) {
             uri.accepts.forEach((k, v) -> auth.requestMatchers(k, uri.value)
                 .hasAnyRole(v.stream().map(Enum::name).toArray(String[]::new)));
@@ -47,7 +54,8 @@ class SecurityConfig implements AuthErrorHelper {
           auth.requestMatchers("/actuator/health").permitAll()
               .requestMatchers("/").permitAll()
               .anyRequest().authenticated();
-        }).exceptionHandling(
+        })
+        .exceptionHandling(
             handler -> handler
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.NOT_FOUND))
                 .accessDeniedHandler((req, res, ex) -> {

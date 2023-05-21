@@ -15,7 +15,8 @@ class UserDetailsServiceImpl implements UserDetailsService {
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     return new AuthUser(User.builder()
         .username(username)
-        .password("{bcrypt}" + "DBのハッシュ")
+//        .password("{bcrypt}" + "DBのハッシュ")
+        .password("{noop}" + "password")
         .roles("SYSTEM_ADMIN")
         .build(), new kirimaru.biz.domain.User());
   }

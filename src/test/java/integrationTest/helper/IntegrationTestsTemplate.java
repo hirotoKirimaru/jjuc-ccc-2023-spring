@@ -13,6 +13,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -34,7 +37,7 @@ public abstract class IntegrationTestsTemplate implements HttpTest {
   @LocalServerPort
   private int port;
   @Autowired
-  TestRestTemplate restTemplate;
+  public TestRestTemplate restTemplate;
 
   // NOTE: Mockはinterfaceが良いのだが、実装クラスをそのまま呼んだ方が好み
   @MockBean(answer = Answers.CALLS_REAL_METHODS)
@@ -59,7 +62,36 @@ public abstract class IntegrationTestsTemplate implements HttpTest {
     registry.add("spring.datasource.password", postgres::getPassword);
   }
 
-  protected ResponseEntity<?> get(ControllerConstant.Uri uri) {
-    return get(restTemplate, uri);
+  protected void login() {
+    // reset
+    authorization = "";
+
+    HttpEntity<String> body = new HttpEntity<>("""
+        {
+           "email": "%1$s",
+           "password": "%2$s"
+        }
+        """.formatted("testA@example.com", "password")
+    );
+    var result = restTemplate.exchange("/login", HttpMethod.POST, body, String.class);
+
+    authorization = result.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
+  }
+
+  private String authorization;
+
+//  protected ResponseEntity<?> get(ControllerConstant.Uri uri) {
+//    return get(restTemplate, uri);
+//  }
+  private HttpHeaders getHttpHeaders(){
+    var headers = new HttpHeaders();
+
+    headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+    headers.add(HttpHeaders.AUTHORIZATION, authorization);
+    return headers;
+  }
+
+  protected ResponseEntity<String> get(ControllerConstant.Uri uri) {
+    return get(restTemplate, uri, getHttpHeaders());
   }
 }

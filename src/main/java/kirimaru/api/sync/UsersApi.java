@@ -2,6 +2,8 @@ package kirimaru.api.sync;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import kirimaru.api.ControllerConstant;
+import kirimaru.api.ControllerConstant.Uri;
 import kirimaru.api.dto.UserDto;
 import kirimaru.api.dto.ResponseUser;
 import kirimaru.biz.domain.User;
