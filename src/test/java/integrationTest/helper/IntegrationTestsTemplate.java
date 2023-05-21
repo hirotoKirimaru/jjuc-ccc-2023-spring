@@ -1,8 +1,11 @@
 package integrationTest.helper;
 
+import jakarta.annotation.PostConstruct;
 import kirimaru.api.ControllerConstant;
 import kirimaru.biz.service.date.DateTimeResolverImpl;
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
@@ -39,6 +42,14 @@ public abstract class IntegrationTestsTemplate implements HttpTest {
   @Autowired
   public TestRestTemplate restTemplate;
 
+  @Autowired
+  public Flyway flyway;
+//
+//  @PostConstruct
+//  public void migration() {
+//    flyway.migrate();
+//  }
+
   // NOTE: Mockはinterfaceが良いのだが、実装クラスをそのまま呼んだ方が好み
   @MockBean(answer = Answers.CALLS_REAL_METHODS)
   protected DateTimeResolverImpl dateTimeResolver;
@@ -53,6 +64,8 @@ public abstract class IntegrationTestsTemplate implements HttpTest {
   public static void setUp() {
     postgres.start();
   }
+
+
 
   @DynamicPropertySource
   static void setup(DynamicPropertyRegistry registry) {
@@ -78,10 +91,10 @@ public abstract class IntegrationTestsTemplate implements HttpTest {
 
   private String authorization;
 
-//  protected ResponseEntity<?> get(ControllerConstant.Uri uri) {
+  //  protected ResponseEntity<?> get(ControllerConstant.Uri uri) {
 //    return get(restTemplate, uri);
 //  }
-  private HttpHeaders getHttpHeaders(){
+  private HttpHeaders getHttpHeaders() {
     var headers = new HttpHeaders();
 
     headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
@@ -90,7 +103,7 @@ public abstract class IntegrationTestsTemplate implements HttpTest {
   }
 
   protected ResponseEntity<String> get(ControllerConstant.Uri uri) {
-//    return get(restTemplate, uri, getHttpHeaders());
-    return get(restTemplate, uri, null);
+    return get(restTemplate, uri, getHttpHeaders());
+//    return get(restTemplate, uri, null);
   }
 }

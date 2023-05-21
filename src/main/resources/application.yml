@@ -8,7 +8,8 @@ spring:
   flyway:
     schemas: app
     default-schema: app
-    locations: classpath:db/migration;classpath:db/record
+    locations: classpath:db/migration
+#    locations: classpath:db/migration;classpath:db/record
   sql:
     init:
       mode: never
