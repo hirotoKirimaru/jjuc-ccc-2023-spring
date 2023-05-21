@@ -8,6 +8,7 @@ import java.util.Collections;
 import kirimaru.api.ControllerConstant.Uri;
 import kirimaru.api.security.AuthUser;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
@@ -24,18 +25,18 @@ public class Users_get extends IntegrationTestsTemplate {
   @DatabaseSetup("/integrationTest/users_get/A01/setup.xml")
   void test_01() throws Exception {
     // GIVEN
-//    login();
+    login();
     // NOTE: これでもいい
-    AuthUser user = new AuthUser(new User("user", "pass", Collections.emptyList()), new kirimaru.biz.domain.User());
-    Authentication authentication = new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities());
-    TestSecurityContextHolder.setAuthentication(authentication);
+//    AuthUser user = new AuthUser(new User("user", "pass", Collections.emptyList()), new kirimaru.biz.domain.User());
+//    Authentication authentication = new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities());
+//    TestSecurityContextHolder.setAuthentication(authentication);
 
     // WHEN
     var response = get(Uri.USERS);
 
     // THEN
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-//    JSONAssert.assertEquals(response.getBody(), "{}", true);
+    JSONAssert.assertEquals(response.getBody(), "{}", true);
   }
 
 

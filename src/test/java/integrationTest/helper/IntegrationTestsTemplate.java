@@ -64,8 +64,6 @@ public abstract class IntegrationTestsTemplate implements HttpTest {
 
   protected void login() {
     // reset
-    authorization = "";
-
     HttpEntity<String> body = new HttpEntity<>("""
         {
            "email": "%1$s",
@@ -92,6 +90,7 @@ public abstract class IntegrationTestsTemplate implements HttpTest {
   }
 
   protected ResponseEntity<String> get(ControllerConstant.Uri uri) {
-    return get(restTemplate, uri, getHttpHeaders());
+//    return get(restTemplate, uri, getHttpHeaders());
+    return get(restTemplate, uri, null);
   }
 }

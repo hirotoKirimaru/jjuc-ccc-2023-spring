@@ -29,9 +29,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter implements
     AuthErrorHelper {
 
-  private AuthenticationManager authenticationManager;
-
-
   public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
     super(authenticationManager);
   }
@@ -60,7 +57,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter implements
       );
       UsernamePasswordAuthenticationToken authedToken = new UsernamePasswordAuthenticationToken(
           authUser, null, null);
-    SecurityContextHolder.getContext().setAuthentication(authedToken);
+      SecurityContextHolder.getContext().setAuthentication(authedToken);
 
       chain.doFilter(request, response);
     } catch (JwtException e) {
