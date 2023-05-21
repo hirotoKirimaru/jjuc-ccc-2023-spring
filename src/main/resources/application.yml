@@ -30,7 +30,7 @@ logging:
     root: debug
 #    root: info
 #    kirimaru: trace
-#    org.springframework.security: trace
+    org.springframework.security: trace
 
 management:
   endpoints:
