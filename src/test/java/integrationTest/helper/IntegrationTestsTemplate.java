@@ -1,8 +1,10 @@
 package integrationTest.helper;
 
 import java.io.IOException;
+import java.util.Collections;
 import javax.sql.DataSource;
 import kirimaru.api.ControllerConstant;
+import kirimaru.api.security.AuthUser;
 import kirimaru.biz.service.date.DateTimeResolverImpl;
 import org.flywaydb.core.Flyway;
 import org.json.JSONException;
@@ -22,6 +24,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.test.context.TestSecurityContextHolder;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestExecutionListeners;
@@ -125,6 +131,20 @@ public abstract class IntegrationTestsTemplate implements HttpTest, AssertDataba
 
   public void assertDatabase(String... paths) {
     assertDatabase(dataSource, paths);
+  }
+
+  protected static void signIn() {
+    AuthUser user = new AuthUser(
+        new User("user", "pass", Collections.emptyList()),
+        new kirimaru.biz.domain.User()
+    );
+    Authentication authentication = new UsernamePasswordAuthenticationToken(
+        user,
+        user.getPassword(),
+        user.getAuthorities()
+    );
+    // Authenticationに登録する
+    TestSecurityContextHolder.setAuthentication(authentication);
   }
 
   protected void assertResponse(ResponseEntity<String> response, String path)
