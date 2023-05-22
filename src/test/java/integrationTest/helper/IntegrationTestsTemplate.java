@@ -1,11 +1,10 @@
 package integrationTest.helper;
 
-import jakarta.annotation.PostConstruct;
+import javax.sql.DataSource;
 import kirimaru.api.ControllerConstant;
 import kirimaru.biz.service.date.DateTimeResolverImpl;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
@@ -22,6 +21,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -35,7 +36,10 @@ import org.testcontainers.utility.DockerImageName;
 //@TestExecutionListeners({
 //    MockitoTestExecutionListener.class // Mockをしたい
 //})
-public abstract class IntegrationTestsTemplate implements HttpTest {
+@TestExecutionListeners({
+    DependencyInjectionTestExecutionListener.class, // dataSourceをDIに使用
+})
+public abstract class IntegrationTestsTemplate implements HttpTest, AssertDatabase {
 
   @LocalServerPort
   private int port;
@@ -49,6 +53,12 @@ public abstract class IntegrationTestsTemplate implements HttpTest {
 //  public void migration() {
 //    flyway.migrate();
 //  }
+
+  @Autowired
+  public DataSource dataSource;
+
+//  @Autowired
+//  private XmlDataSetLoader dataLoader;
 
   // NOTE: Mockはinterfaceが良いのだが、実装クラスをそのまま呼んだ方が好み
   @MockBean(answer = Answers.CALLS_REAL_METHODS)
@@ -64,7 +74,6 @@ public abstract class IntegrationTestsTemplate implements HttpTest {
   public static void setUp() {
     postgres.start();
   }
-
 
 
   @DynamicPropertySource
@@ -104,6 +113,13 @@ public abstract class IntegrationTestsTemplate implements HttpTest {
 
   protected ResponseEntity<String> get(ControllerConstant.Uri uri) {
     return get(restTemplate, uri, getHttpHeaders());
-//    return get(restTemplate, uri, null);
+  }
+
+  public void setUpDatabase(String... paths) {
+    setUpDatabase(dataSource, paths);
+  }
+
+  public void assertDatabase(String... paths) {
+    assertDatabase(dataSource, paths);
   }
 }
