@@ -29,30 +29,35 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 class SecurityConfig implements AuthErrorHelper {
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http,
+  public SecurityFilterChain securityFilterChain(
+      HttpSecurity http,
       AuthenticationManager authenticationManager,
-      JWTAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+      JWTAuthenticationFilter jwtAuthenticationFilter
+  ) throws Exception {
 
     http.csrf().disable()
         .cors().and()
-        .formLogin().disable()
         .addFilter(new JWTAuthorizationFilter(authenticationManager))
         .addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        .logout(logout -> logout.logoutRequestMatcher(
-                new AntPathRequestMatcher("/logout", HttpMethod.GET.name()))
+        .logout(logout -> logout
+            .logoutRequestMatcher(new AntPathRequestMatcher("/logout", HttpMethod.GET.name()))
             .logoutSuccessHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
-            .invalidateHttpSession(true))
-
+            .invalidateHttpSession(true)
+        )
         .authorizeHttpRequests(auth -> {
           for (Uri uri : Uri.values()) {
-            uri.accepts.forEach((k, v) -> auth.requestMatchers(k, uri.value)
-                .hasAnyRole(v.stream().map(Enum::name).toArray(String[]::new)));
+////            uri.accepts.forEach((k, v) -> auth.requestMatchers(k, uri.value)
+////                .hasAnyRole(v.stream().map(Enum::name).toArray(String[]::new)));
+
+            uri.accepts.forEach((k, v) -> auth.requestMatchers(k, uri.value));
             auth.requestMatchers(HttpMethod.OPTIONS, uri.value).permitAll();
-            auth.requestMatchers(uri.value).denyAll();
+            // NOTE: ちょっと前のバージョンだと、許可していないもの以外はすべて閉じる必要があった
+//                .requestMatchers(uri.value).denyAll();
           }
 
           auth.requestMatchers("/actuator/health").permitAll()
               .requestMatchers("/").permitAll()
+//              .requestMatchers("/users").permitAll()
               .anyRequest().authenticated();
         })
         .exceptionHandling(

@@ -14,10 +14,8 @@ public interface HttpTest {
 
     HttpEntity<String> stringHttpEntity = new HttpEntity<>(null, headers);
 
-    var a = restTemplate.exchange(
+    return restTemplate.exchange(
         URI.create(uri.value), HttpMethod.GET, stringHttpEntity, String.class
     );
-
-    return a;
   }
 }

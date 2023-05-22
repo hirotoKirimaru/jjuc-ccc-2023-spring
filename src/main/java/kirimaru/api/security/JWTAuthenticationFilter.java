@@ -29,15 +29,12 @@ import org.springframework.stereotype.Component;
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter implements
     AuthErrorHelper {
 
-//  private AuthenticationManager authenticationManager;
-
-
   public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
-//    this.authenticationManager = authenticationManager;
     setAuthenticationManager(authenticationManager);
     // ログイン用のPATH
     setRequiresAuthenticationRequestMatcher(
-        new AntPathRequestMatcher("/login", HttpMethod.POST.name()));
+        new AntPathRequestMatcher("/login", HttpMethod.POST.name())
+    );
 
     // ログイン用のID/PWのパラメータ名
     setUsernameParameter("email");
@@ -87,11 +84,5 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     SecurityContextHolder.clearContext();
 
     createErrorResponse(response, HttpStatus.UNAUTHORIZED);
-//    super.unsuccessfulAuthentication(request, response, failed);
   }
-
-//  @Override
-//  protected AuthenticationFailureHandler getFailureHandler() {
-//    return super.getFailureHandler();
-//  }
 }

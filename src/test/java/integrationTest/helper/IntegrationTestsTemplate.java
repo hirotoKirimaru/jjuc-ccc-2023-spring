@@ -1,11 +1,14 @@
 package integrationTest.helper;
 
+import java.io.IOException;
 import javax.sql.DataSource;
 import kirimaru.api.ControllerConstant;
 import kirimaru.biz.service.date.DateTimeResolverImpl;
 import org.flywaydb.core.Flyway;
+import org.json.JSONException;
 import org.junit.jupiter.api.BeforeAll;
 import org.mockito.Answers;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -25,6 +28,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -121,5 +125,12 @@ public abstract class IntegrationTestsTemplate implements HttpTest, AssertDataba
 
   public void assertDatabase(String... paths) {
     assertDatabase(dataSource, paths);
+  }
+
+  protected void assertResponse(ResponseEntity<String> response, String path)
+      throws JSONException, IOException {
+    JSONAssert.assertEquals(response.getBody(),
+        IOUtils.toString(getClass().getResourceAsStream(path)), true
+    );
   }
 }

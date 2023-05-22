@@ -1,6 +1,5 @@
 package kirimaru.api.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
@@ -8,20 +7,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * 認可フィルター
@@ -34,36 +25,57 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter implements
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain chain) throws IOException, ServletException {
-//    super.doFilterInternal(request, response, chain);
+  protected void doFilterInternal(
+      HttpServletRequest req,
+      HttpServletResponse res,
+      FilterChain chain
+  ) throws IOException, ServletException {
     try {
-      String token = request.getHeader(SecurityConstants.HEADER);
-      if (token == null || !token.startsWith(SecurityConstants.TOKEN_PREFIX)) {
-        return;
-      }
-      String email = Jwts.parserBuilder()
-          .setSigningKey(SecurityConstants.KEY)
-          .build()
-          .parseClaimsJws(token.replace(SecurityConstants.TOKEN_PREFIX, ""))
-          .getBody()
-          .getSubject();
-      var authUser = new AuthUser(
-          User.builder()
-              .username(email)
-              .password("{noop}" + "password")
-              .build(),
-          new kirimaru.biz.domain.User()
-      );
-      UsernamePasswordAuthenticationToken authedToken = new UsernamePasswordAuthenticationToken(
-          authUser, null, null);
+      var authedToken = getAuthToken(req);
       SecurityContextHolder.getContext().setAuthentication(authedToken);
-
-      chain.doFilter(request, response);
+      chain.doFilter(req, res);
+//    super.doFilterInternal(req, res, chain);
     } catch (JwtException e) {
-      createErrorResponse(response, HttpStatus.UNAUTHORIZED);
+      createErrorResponse(res, HttpStatus.UNAUTHORIZED);
     }
+  }
 
+  private UsernamePasswordAuthenticationToken getAuthToken(
+      HttpServletRequest request
+  ) {
+    AuthUser authUser = getAuthUser(request);
+    return new UsernamePasswordAuthenticationToken(authUser, null, authUser.getAuthorities());
+  }
 
+  private AuthUser getAuthUser(HttpServletRequest request) {
+    String token = request.getHeader(SecurityConstants.HEADER);
+    if (token == null || !token.startsWith(SecurityConstants.TOKEN_PREFIX)) {
+      return createAnonymousUser();
+    }
+    String email = Jwts.parserBuilder()
+        .setSigningKey(SecurityConstants.KEY)
+        .build()
+        .parseClaimsJws(token.replace(SecurityConstants.TOKEN_PREFIX, ""))
+        .getBody()
+        .getSubject();
+    return new AuthUser(
+        User.builder()
+            .username(email)
+            .password("{noop}password")
+            .roles("SYSTEM_ADMIN")
+            .build(),
+        new kirimaru.biz.domain.User()
+    );
+  }
+
+  private AuthUser createAnonymousUser() {
+    return new AuthUser(
+        User.builder()
+            .username("anonymousUser")
+            .password("{noop}password")
+            .roles("ANONYMOUS")
+            .build(),
+        new kirimaru.biz.domain.User()
+    );
   }
 }

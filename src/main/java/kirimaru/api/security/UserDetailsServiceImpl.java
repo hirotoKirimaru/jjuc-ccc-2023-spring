@@ -16,7 +16,7 @@ class UserDetailsServiceImpl implements UserDetailsService {
     return new AuthUser(User.builder()
         .username(username)
 //        .password("{bcrypt}" + "DBのハッシュ")
-        .password("{noop}" + "password")
+        .password("{noop}password")
         .roles("SYSTEM_ADMIN")
         .build(), new kirimaru.biz.domain.User());
   }
