@@ -10,6 +10,7 @@ import org.dbunit.assertion.DiffCollectingFailureHandler;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
+import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +44,10 @@ public interface AssertDatabase {
 
       DiffCollectingFailureHandler failureHandler = new DiffCollectingFailureHandler();
       for (String path : paths) {
-        IDataSet expected = new FlatXmlDataSetBuilder().build(getClass().getResourceAsStream(path));
+        IDataSet loadExpectedXml = new FlatXmlDataSetBuilder().build(getClass().getResourceAsStream(path));
+        ReplacementDataSet expected = new ReplacementDataSet(loadExpectedXml);
+        expected.addReplacementObject("[null]", null);
+
         for (String tableName : expected.getTableNames()) {
           ITable expectedTable = expected.getTable(tableName);
           ITable actualTable = actual.getTable(tableName);
@@ -70,13 +74,13 @@ public interface AssertDatabase {
           }
         }
         if (!failureHandler.getDiffList().isEmpty()) {
-//          StringBuilder sb = new StringBuilder();
-//          failureHandler.getDiffList().forEach(
-//              diff -> sb.append(diff.toString())
-//          );
+          StringBuilder sb = new StringBuilder();
+          failureHandler.getDiffList().forEach(
+              diff -> sb.append(diff.toString())
+          );
 //          Assertions.fail(sb.toString());
           // カラムの内容差異の場合のエラー
-          Assertions.fail("テーブルの比較に失敗しました。");
+          Assertions.fail("テーブルの比較に失敗しました。\n" + sb);
 
         }
       }
