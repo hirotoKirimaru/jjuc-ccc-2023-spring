@@ -6,7 +6,6 @@ import javax.sql.DataSource;
 import kirimaru.api.ControllerConstant;
 import kirimaru.api.security.AuthUser;
 import kirimaru.biz.service.date.DateTimeResolverImpl;
-import org.flywaydb.core.Flyway;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeAll;
 import org.mockito.Answers;
@@ -32,6 +31,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
@@ -51,24 +51,14 @@ import org.testcontainers.utility.DockerImageName;
 })
 public abstract class IntegrationTestsTemplate implements HttpTest, AssertDatabase {
 
-  @LocalServerPort
-  private int port;
+// NOTE: 宣言しても使わない
+//  @LocalServerPort
+//  private int port;
   @Autowired
   public TestRestTemplate restTemplate;
 
   @Autowired
-  public Flyway flyway;
-//
-//  @PostConstruct
-//  public void migration() {
-//    flyway.migrate();
-//  }
-
-  @Autowired
   public DataSource dataSource;
-
-//  @Autowired
-//  private XmlDataSetLoader dataLoader;
 
   // NOTE: Mockはinterfaceが良いのだが、実装クラスをそのまま呼んだ方が好み
   @MockBean(answer = Answers.CALLS_REAL_METHODS)
@@ -80,9 +70,17 @@ public abstract class IntegrationTestsTemplate implements HttpTest, AssertDataba
       .withPassword("password")
       .withDatabaseName("database");
 
+//  public static final DockerImageName MOCKSERVER_IMAGE = DockerImageName
+//      .parse("mockserver/mockserver")
+//      .withTag("mockserver-" + MockServerClient.class.getPackage().getImplementationVersion());
+//  public MockServerContainer mockServer = new MockServerContainer(MOCKSERVER_IMAGE);
+//
+
   @BeforeAll
   public static void setUp() {
     postgres.start();
+//    wireMock.start();
+//    mockServer.start();
   }
 
 
