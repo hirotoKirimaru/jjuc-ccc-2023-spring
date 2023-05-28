@@ -31,5 +31,4 @@ public abstract class RepositoryTestTemplate {
     registry.add("spring.datasource.username", postgres::getUsername);
     registry.add("spring.datasource.password", postgres::getPassword);
   }
-
 }

@@ -6,13 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-  private String userId;
-  private String email;
-  private String name;
-
+public class Organization {
   private String organizationId;
+  private String name;
 }
