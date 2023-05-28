@@ -37,6 +37,16 @@ logging:
 #    kirimaru: trace
     org.springframework.security: trace
 
+external:
+  common: &common
+    host: localhost
+    protocol: http
+    port: 80
+    timeout: 3
+  github:
+    <<: *common
+    endpoint: github
+
 management:
   endpoints:
     web:
