@@ -16,6 +16,10 @@ spring:
   jackson:
     default-property-inclusion: NON_EMPTY
 
+  test:
+    database:
+      replace: NONE # ローカルでTestContainersを動かすため
+
 server:
   port: 18080
   servlet:

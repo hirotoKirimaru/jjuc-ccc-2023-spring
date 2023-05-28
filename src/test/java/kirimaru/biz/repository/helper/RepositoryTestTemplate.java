@@ -3,7 +3,6 @@ package kirimaru.biz.repository.helper;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -12,7 +11,6 @@ import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
 @MybatisTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public abstract class RepositoryTestTemplate {
 
   private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
