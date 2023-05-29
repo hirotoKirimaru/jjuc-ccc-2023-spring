@@ -1,3 +1,7 @@
+app:
+  config:
+    appName: "Kirimaru"
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
