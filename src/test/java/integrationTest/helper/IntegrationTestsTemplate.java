@@ -66,9 +66,10 @@ public abstract class IntegrationTestsTemplate implements HttpTest, AssertDataba
 
   private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
       DockerImageName.parse("postgres"))
-      .withUsername("testuser")
-      .withPassword("password")
-      .withDatabaseName("database");
+//      .withUsername("testuser")
+//      .withPassword("password")
+//      .withDatabaseName("database")
+      ;
 
 //  public static final DockerImageName MOCKSERVER_IMAGE = DockerImageName
 //      .parse("mockserver/mockserver")
