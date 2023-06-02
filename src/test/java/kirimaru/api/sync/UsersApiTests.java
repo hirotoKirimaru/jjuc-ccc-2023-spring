@@ -5,7 +5,6 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 import java.util.List;
 import kirimaru.api.security.AuthUser;
-import kirimaru.api.sync.UsersApi;
 import kirimaru.biz.service.UsersService;
 import kirimaru.biz.service.date.DateTimeResolver;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +14,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -60,8 +57,11 @@ class UsersApiTests {
 
     // WHEN
     var result = this.mockMvc.perform(
-            MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON_VALUE))
-//        .andExpect(MockMvcResultMatchers.status().isOk())
+            MockMvcRequestBuilders.get(url)
+                .param("userId", "1")
+                .param("name", "2")
+        )
+        .andExpect(MockMvcResultMatchers.status().isOk())
         .andReturn();
 
     // THEN

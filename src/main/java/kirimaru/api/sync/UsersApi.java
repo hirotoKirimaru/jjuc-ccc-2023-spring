@@ -40,7 +40,8 @@ public class UsersApi {
   @Data
   @AllArgsConstructor
   private static class GetParam {
-
+    private String userId;
+    private String name;
   }
 
 }
