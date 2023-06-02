@@ -49,7 +49,7 @@ import org.testcontainers.utility.DockerImageName;
 @TestExecutionListeners({
     DependencyInjectionTestExecutionListener.class, // dataSourceをDIに使用
 })
-public abstract class IntegrationTestsTemplate implements HttpTest, AssertDatabase {
+public abstract class IntegrationTestsTemplate implements HttpTest, AssertDatabase, AuthTest {
 
 // NOTE: 宣言しても使わない
 //  @LocalServerPort
@@ -125,20 +125,6 @@ public abstract class IntegrationTestsTemplate implements HttpTest, AssertDataba
 
   public void assertDatabase(String... paths) {
     assertDatabase(dataSource, paths);
-  }
-
-  protected static void signIn() {
-    AuthUser user = new AuthUser(
-        new User("user", "pass", Collections.emptyList()),
-        new kirimaru.biz.domain.User()
-    );
-    Authentication authentication = new UsernamePasswordAuthenticationToken(
-        user,
-        user.getPassword(),
-        user.getAuthorities()
-    );
-    // Authenticationに登録する
-    TestSecurityContextHolder.setAuthentication(authentication);
   }
 
   protected void assertResponse(ResponseEntity<String> response, String path)

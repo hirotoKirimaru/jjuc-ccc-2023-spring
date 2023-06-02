@@ -2,6 +2,7 @@ package kirimaru.api.sync;
 
 import static org.mockito.Mockito.when;
 
+import integrationTest.helper.AuthTest;
 import java.util.Collections;
 import java.util.List;
 import kirimaru.api.security.AuthUser;
@@ -25,7 +26,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @WebMvcTest(UsersApi.class)
 //@AutoConfigureWebClient
-class UsersApiTests {
+class UsersApiTests implements AuthTest {
 
   @Autowired
   MockMvc mockMvc;
@@ -39,21 +40,13 @@ class UsersApiTests {
 
   String url = "/users";
 
-  @BeforeEach
-  void beforeEach() {
-    AuthUser user = new AuthUser(new User("user", "pass", Collections.emptyList()),
-        new kirimaru.biz.domain.User());
-    Authentication authentication = new UsernamePasswordAuthenticationToken(user,
-        user.getPassword(), user.getAuthorities());
-    TestSecurityContextHolder.setAuthentication(authentication);
-  }
-
   @Test
   void success() throws Exception {
     // GIVEN
     when(usersService.execute()).thenReturn(List.of(
         kirimaru.biz.domain.User.builder().userId("1").email("1@example.com").name("1").build(),
         kirimaru.biz.domain.User.builder().userId("2").email("2@example.com").name("2").build()));
+    signIn();
 
     // WHEN
     var result = this.mockMvc.perform(
