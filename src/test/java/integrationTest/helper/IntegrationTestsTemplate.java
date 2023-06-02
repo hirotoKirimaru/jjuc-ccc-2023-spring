@@ -93,35 +93,30 @@ public abstract class IntegrationTestsTemplate implements HttpTest, AssertDataba
     registry.add("spring.datasource.password", postgres::getPassword);
   }
 
-  protected void login() {
-    // reset
-    HttpEntity<String> body = new HttpEntity<>("""
-        {
-           "email": "%1$s",
-           "password": "%2$s"
-        }
-        """.formatted("testA@example.com", "password")
-    );
-    var result = restTemplate.exchange("/login", HttpMethod.POST, body, String.class);
+//  protected void login() {
+//    // reset
+//    HttpEntity<String> body = new HttpEntity<>("""
+//        {
+//           "email": "%1$s",
+//           "password": "%2$s"
+//        }
+//        """.formatted("testA@example.com", "password")
+//    );
+//    var result = restTemplate.exchange("/login", HttpMethod.POST, body, String.class);
+//
+//    authorization = result.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
+//  }
 
-    authorization = result.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
-  }
-
-  private String authorization;
+//  private String authorization;
 
   //  protected ResponseEntity<?> get(ControllerConstant.Uri uri) {
 //    return get(restTemplate, uri);
 //  }
-  private HttpHeaders getHttpHeaders() {
-    var headers = new HttpHeaders();
 
-    headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
-    headers.add(HttpHeaders.AUTHORIZATION, authorization);
-    return headers;
-  }
 
   protected ResponseEntity<String> get(ControllerConstant.Uri uri) {
-    return get(restTemplate, uri, getHttpHeaders());
+//    return get(restTemplate, uri, getHttpHeaders());
+    return get(restTemplate, uri);
   }
 
   public void setUpDatabase(String... paths) {

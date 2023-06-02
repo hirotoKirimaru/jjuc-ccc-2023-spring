@@ -10,6 +10,17 @@ import org.springframework.http.ResponseEntity;
 
 public interface HttpTest {
 
+  private HttpHeaders getHttpHeaders() {
+    var headers = new HttpHeaders();
+
+    headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+//    headers.add(HttpHeaders.AUTHORIZATION, authorization);
+    return headers;
+  }
+  default ResponseEntity<String> get(TestRestTemplate restTemplate, Uri uri) {
+    return get(restTemplate, uri, getHttpHeaders());
+  }
+
   default ResponseEntity<String> get(TestRestTemplate restTemplate, Uri uri, HttpHeaders headers) {
 
     HttpEntity<String> stringHttpEntity = new HttpEntity<>(null, headers);
