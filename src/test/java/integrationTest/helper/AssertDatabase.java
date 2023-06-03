@@ -6,8 +6,12 @@ import org.assertj.core.api.Assertions;
 import org.dbunit.Assertion;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.assertion.DbComparisonFailure;
+import org.dbunit.assertion.DefaultFailureHandler;
 import org.dbunit.assertion.DiffCollectingFailureHandler;
+import org.dbunit.assertion.Difference;
 import org.dbunit.database.DatabaseConnection;
+import org.dbunit.dataset.Column;
+import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -42,9 +46,12 @@ public interface AssertDatabase {
       DatabaseConnection dbUnitConnection = getDbUnitConnection(connection);
       IDataSet actual = dbUnitConnection.createDataSet();
 
+      // 件数が一致しなかったときのエラーメッセージ用
+      StringBuilder countErrorSb = new StringBuilder();
       DiffCollectingFailureHandler failureHandler = new DiffCollectingFailureHandler();
       for (String path : paths) {
-        IDataSet loadExpectedXml = new FlatXmlDataSetBuilder().build(getClass().getResourceAsStream(path));
+        IDataSet loadExpectedXml = new FlatXmlDataSetBuilder().build(
+            getClass().getResourceAsStream(path));
         ReplacementDataSet expected = new ReplacementDataSet(loadExpectedXml);
         expected.addReplacementObject("[null]", null);
 
@@ -55,28 +62,53 @@ public interface AssertDatabase {
           try {
             Assertion.assertEquals(expectedTable, actualTable, failureHandler);
           } catch (DbComparisonFailure e) {
-//            StringBuilder sb = new StringBuilder();
-//
-//            for (int i = 0; i < actualTable.getRowCount(); i++) {
-//              for (Column column : actualTable.getTableMetaData().getColumns()) {
-//                sb.append(column.getColumnName());
-//                sb.append("=");
-//                sb.append(actualTable.getValue(i, column.getColumnName()));
-//                sb.append(",");
-//              }
-//              sb.append("\n");
-//            }
-//            System.out.println(sb);
-//            throw new RuntimeException(e);
-            // 件数が一致しなかったときのエラーメッセージ.
-//            failureHandler.createFailure("件数が合いませんでした");
-            throw new RuntimeException(e);
+            if (actualTable.getRowCount() == 0) {
+              countErrorSb.append("件数不一致:データがありません[");
+              countErrorSb.append("table=").append(tableName);
+              countErrorSb.append("]");
+              countErrorSb.append("\n");
+            }
+            for (int i = 0; i < actualTable.getRowCount(); i++) {
+              countErrorSb.append("件数不一致:データ[");
+              countErrorSb.append("table=").append(tableName);
+              countErrorSb.append(",");
+              for (Column column : actualTable.getTableMetaData().getColumns()) {
+                countErrorSb.append(column.getColumnName());
+                countErrorSb.append("=");
+                countErrorSb.append(actualTable.getValue(i, column.getColumnName()));
+                countErrorSb.append(",");
+              }
+              countErrorSb.append("]");
+              countErrorSb.append("\n");
+            }
           }
         }
-        if (!failureHandler.getDiffList().isEmpty()) {
-          StringBuilder sb = new StringBuilder();
+        if (!countErrorSb.isEmpty() || !failureHandler.getDiffList().isEmpty()) {
+          StringBuilder sb = new StringBuilder(countErrorSb);
           failureHandler.getDiffList().forEach(
-              diff -> sb.append(diff.toString())
+              d -> {
+                var diff = (Difference) d;
+                sb.append("値不一致:[");
+                sb.append("Table=").append(diff.getExpectedTable().getTableMetaData().getTableName());
+                try {
+                  int i = 1;
+                  for (Column primaryKey : diff.getActualTable().getTableMetaData()
+                      .getPrimaryKeys()) {
+                    sb.append(",pk").append(i++).append("=").append(primaryKey.getColumnName());
+                    sb.append("=").append(diff.getActualTable().getValue(diff.getRowIndex(), primaryKey.getColumnName()));
+                  }
+                } catch (DataSetException e) {
+                  throw new RuntimeException(e);
+                }
+//                sb.append(", rowIndex=").append(diff.getRowIndex());
+                sb.append(", columnName=").append(diff.getColumnName());
+                sb.append(", expectedValue=").append(diff.getExpectedValue());
+                sb.append(", actualValue=").append(diff.getActualValue());
+                sb.append("]");
+                sb.append("\n");
+//                sb.append(diff);
+              }
+//              diff -> sb.append(diff.toString());
           );
 //          Assertions.fail(sb.toString());
           // カラムの内容差異の場合のエラー
