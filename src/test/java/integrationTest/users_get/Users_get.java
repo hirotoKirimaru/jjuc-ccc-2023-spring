@@ -24,8 +24,6 @@ public class Users_get extends IntegrationTestsTemplate {
   void test_01() throws Exception {
     // GIVEN
     setUpDatabase("/integrationTest/users_get/A01/setup.xml");
-//    login();
-    // NOTE:
     signIn();
 
     // WHEN

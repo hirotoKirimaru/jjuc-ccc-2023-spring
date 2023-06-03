@@ -55,6 +55,8 @@ class UsersApiTests implements AuthTest {
                 .param("name", "2")
         )
         .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.users[0].userId").value("1"))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.users[1].userId").value("2"))
         .andReturn();
 
     // THEN
