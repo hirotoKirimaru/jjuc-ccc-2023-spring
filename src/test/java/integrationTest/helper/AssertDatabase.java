@@ -60,6 +60,7 @@ public interface AssertDatabase {
           ITable actualTable = actual.getTable(tableName);
 
           try {
+//            Assertion.assertEquals(expectedTable, actualTable, failureHandler);
             Assertion.assertEquals(expectedTable, actualTable, failureHandler);
           } catch (DbComparisonFailure e) {
             if (actualTable.getRowCount() == 0) {
@@ -85,31 +86,29 @@ public interface AssertDatabase {
         }
         if (!countErrorSb.isEmpty() || !failureHandler.getDiffList().isEmpty()) {
           StringBuilder sb = new StringBuilder(countErrorSb);
-          failureHandler.getDiffList().forEach(
-              d -> {
-                var diff = (Difference) d;
-                sb.append("値不一致:[");
-                sb.append("Table=").append(diff.getExpectedTable().getTableMetaData().getTableName());
-                try {
-                  int i = 1;
-                  for (Column primaryKey : diff.getActualTable().getTableMetaData()
-                      .getPrimaryKeys()) {
-                    sb.append(",pk").append(i++).append("=").append(primaryKey.getColumnName());
-                    sb.append("=").append(diff.getActualTable().getValue(diff.getRowIndex(), primaryKey.getColumnName()));
-                  }
-                } catch (DataSetException e) {
-                  throw new RuntimeException(e);
-                }
-//                sb.append(", rowIndex=").append(diff.getRowIndex());
-                sb.append(", columnName=").append(diff.getColumnName());
-                sb.append(", expectedValue=").append(diff.getExpectedValue());
-                sb.append(", actualValue=").append(diff.getActualValue());
-                sb.append("]");
-                sb.append("\n");
-//                sb.append(diff);
+          for (var d : failureHandler.getDiffList()) {
+            if (d instanceof Difference diff) {
+              sb.append("値不一致:[");
+              sb.append("Table=").append(diff.getExpectedTable().getTableMetaData().getTableName());
+              int i = 1;
+              for (Column primaryKey : diff.getActualTable().getTableMetaData()
+                  .getPrimaryKeys()) {
+                sb.append(",pk").append(i++).append("=").append(primaryKey.getColumnName());
+                sb.append("=").append(diff.getActualTable()
+                    .getValue(diff.getRowIndex(), primaryKey.getColumnName()));
               }
+//                sb.append(", rowIndex=").append(diff.getRowIndex());
+              sb.append(", columnName=").append(diff.getColumnName());
+              sb.append(", expectedValue=").append(diff.getExpectedValue());
+              sb.append(", actualValue=").append(diff.getActualValue());
+              sb.append("]");
+              sb.append("\n");
+//                sb.append(diff);
+
+            }
+          }
+
 //              diff -> sb.append(diff.toString());
-          );
 //          Assertions.fail(sb.toString());
           // カラムの内容差異の場合のエラー
           Assertions.fail("テーブルの比較に失敗しました。\n" + sb);
